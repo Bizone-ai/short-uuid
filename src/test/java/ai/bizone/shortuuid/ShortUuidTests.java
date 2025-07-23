@@ -1,6 +1,5 @@
 package ai.bizone.shortuuid;
 
-import ai.bizone.shortuuid.ShortUuid;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

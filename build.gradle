@@ -1,14 +1,28 @@
-import com.vanniktech.maven.publish.JavaLibrary
-import com.vanniktech.maven.publish.JavadocJar
-import com.vanniktech.maven.publish.SonatypeHost
+//import com.vanniktech.maven.publish.JavaLibrary
+//import com.vanniktech.maven.publish.JavadocJar
+//import com.vanniktech.maven.publish.SonatypeHost
 
 plugins {
     id 'java-library'
-    id "com.vanniktech.maven.publish" version "0.28.0"
+    id 'maven-publish'
+    //id "com.vanniktech.maven.publish" version "0.28.0"
 }
 
-group 'co.nlighten'
-version = '0.1.1'
+def gitVersionCache = null
+ext.generateVersionFromGitTag = { ->
+    if (gitVersionCache == null) {
+        def stdout = new ByteArrayOutputStream()
+        exec {
+            commandLine 'git', 'describe', '--tags', '--always'
+            standardOutput = stdout
+        }
+        gitVersionCache = stdout.toString().trim()
+    }
+    return gitVersionCache
+}
+
+group 'ai.bizone'
+version System.getenv("VERSION") ?: generateVersionFromGitTag()
 
 sourceCompatibility = JavaVersion.VERSION_17
 targetCompatibility = JavaVersion.VERSION_17
@@ -23,7 +37,16 @@ dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter'
 }
 
-jar { archiveClassifier = '' }
+jar {
+    enabled = true
+    archiveClassifier = ''
+    manifest {
+        attributes(
+                "Implementation-Title": project.name,
+                "Implementation-Version": project.version
+        )
+    }
+}
 
 ext.genOutputDir = file("$buildDir/generated-resources")
 
@@ -58,41 +81,58 @@ javadoc {
     (options as StandardJavadocDocletOptions).tags("apiNote:a:API Note:")
 }
 
-mavenPublishing {
-    configure(new JavaLibrary(new JavadocJar.Javadoc(), true))
-    //publishToMavenCentral(SonatypeHost.DEFAULT, true)
-    // or when publishing to https://s01.oss.sonatype.org
-    // publishToMavenCentral(SonatypeHost.S01)
-    // or when publishing to https://central.sonatype.com/
-    publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL)
-
-    signAllPublications()
-
-    coordinates("${project.group}", 'short-uuid', "${version}")
-
-    pom {
-        name = 'short-uuid'
-        description = 'Short UUID conversion and generation library for Java'
-        inceptionYear = "2024"
-        url = 'https://github.com/nlighten-oss/short-uuid'
-        licenses {
-            license {
-                name = "The Apache License, Version 2.0"
-                url = "http://www.apache.org/licenses/LICENSE-2.0.txt"
-                distribution = "http://www.apache.org/licenses/LICENSE-2.0.txt"
-            }
-        }
-        developers {
-            developer {
-                id = "elisherer"
-                name = "Eli Sherer"
-                url = "https://github.com/elisherer/"
-            }
-        }
-        scm {
-            url = 'https://github.com/nlighten-oss/short-uuid'
-            connection = 'scm:git://github.com/nlighten-oss/short-uuid.git'
-            developerConnection = 'scm:git://github.com/nlighten-oss/short-uuid.git'
+publishing {
+    repositories {
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/ai-bizone/short-uuid")
+            credentials {
+                username = project.findProperty("gpr.user") ?: System.getenv("USERNAME")
+                password = project.findProperty("gpr.key") ?: System.getenv("TOKEN")
+            }}
+    }
+    publications {
+        gpr(MavenPublication) {
+            from (components.java)
         }
     }
 }
+
+//mavenPublishing {
+//    configure(new JavaLibrary(new JavadocJar.Javadoc(), true))
+//    //publishToMavenCentral(SonatypeHost.DEFAULT, true)
+//    // or when publishing to https://s01.oss.sonatype.org
+//    // publishToMavenCentral(SonatypeHost.S01)
+//    // or when publishing to https://central.sonatype.com/
+//    publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL)
+//
+//    signAllPublications()
+//
+//    coordinates("${project.group}", 'short-uuid', "${version}")
+//
+//    pom {
+//        name = 'short-uuid'
+//        description = 'Short UUID conversion and generation library for Java'
+//        inceptionYear = "2024"
+//        url = 'https://github.com/bizone-ai/short-uuid'
+//        licenses {
+//            license {
+//                name = "The Apache License, Version 2.0"
+//                url = "http://www.apache.org/licenses/LICENSE-2.0.txt"
+//                distribution = "http://www.apache.org/licenses/LICENSE-2.0.txt"
+//            }
+//        }
+//        developers {
+//            developer {
+//                id = "surielb"
+//                name = "Suriel Bendahan"
+//                url = "https://github.com/surielb/"
+//            }
+//        }
+//        scm {
+//            url = 'https://github.com/bizone-ai/short-uuid'
+//            connection = 'scm:git://github.com/bizone-ai/short-uuid.git'
+//            developerConnection = 'scm:git://github.com/bizone-ai/short-uuid.git'
+//        }
+//    }
+//}
