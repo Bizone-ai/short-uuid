@@ -1,6 +1,6 @@
-package co.nlighten.shortuuid;
+package ai.bizone.shortuuid;
 
-import co.nlighten.shortuuid.ShortUuid;
+import ai.bizone.shortuuid.ShortUuid;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 

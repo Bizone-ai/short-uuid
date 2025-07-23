@@ -1,4 +1,4 @@
-package co.nlighten.shortuuid;
+package ai.bizone.shortuuid;
 
 import java.math.BigInteger;
 import java.util.regex.Pattern;
