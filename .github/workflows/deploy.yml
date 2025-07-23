@@ -27,7 +27,7 @@ jobs:
           echo "VERSION=$VERSION" >> $GITHUB_ENV
 
       - name: Build and publish to Maven Central
-        run: ./gradlew publishAndReleaseToMavenCentral
+        run: ./gradlew publishAndReleaseToMavenCentral --debug --stacktrace
         env:
           VERSION: "${{ env.VERSION }}"
           ORG_GRADLE_PROJECT_mavenCentralUsername: "${{ secrets.OSSRH_USERNAME }}"

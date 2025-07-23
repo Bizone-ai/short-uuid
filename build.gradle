@@ -3,7 +3,6 @@ import com.vanniktech.maven.publish.JavadocJar
 
 plugins {
     id 'java-library'
-    id 'signing'
     id "com.vanniktech.maven.publish" version "0.34.0"
 }
 
