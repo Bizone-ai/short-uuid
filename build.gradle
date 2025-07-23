@@ -1,6 +1,5 @@
 import com.vanniktech.maven.publish.JavaLibrary
 import com.vanniktech.maven.publish.JavadocJar
-import com.vanniktech.maven.publish.SonatypeHost
 
 plugins {
     id 'java-library'
@@ -82,12 +81,7 @@ javadoc {
 
 mavenPublishing {
     configure(new JavaLibrary(new JavadocJar.Javadoc(), true))
-    //publishToMavenCentral(SonatypeHost.DEFAULT, true)
-    // or when publishing to https://s01.oss.sonatype.org
-    // publishToMavenCentral(SonatypeHost.S01)
-    // or when publishing to https://central.sonatype.com/
-    publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL)
-
+    publishToMavenCentral(true)
     signAllPublications()
 
     coordinates("${project.group}", 'short-uuid', "${version}")
