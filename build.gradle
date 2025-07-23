@@ -1,11 +1,10 @@
-//import com.vanniktech.maven.publish.JavaLibrary
-//import com.vanniktech.maven.publish.JavadocJar
-//import com.vanniktech.maven.publish.SonatypeHost
+import com.vanniktech.maven.publish.JavaLibrary
+import com.vanniktech.maven.publish.JavadocJar
+import com.vanniktech.maven.publish.SonatypeHost
 
 plugins {
     id 'java-library'
-    id 'maven-publish'
-    //id "com.vanniktech.maven.publish" version "0.28.0"
+    id "com.vanniktech.maven.publish" version "0.34.0"
 }
 
 def gitVersionCache = null
@@ -81,58 +80,41 @@ javadoc {
     (options as StandardJavadocDocletOptions).tags("apiNote:a:API Note:")
 }
 
-publishing {
-    repositories {
-        maven {
-            name = "GitHubPackages"
-            url = uri("https://maven.pkg.github.com/bizone-ai/short-uuid")
-            credentials {
-                username = project.findProperty("gpr.user") ?: System.getenv("USERNAME")
-                password = project.findProperty("gpr.key") ?: System.getenv("TOKEN")
-            }}
-    }
-    publications {
-        gpr(MavenPublication) {
-            from (components.java)
+mavenPublishing {
+    configure(new JavaLibrary(new JavadocJar.Javadoc(), true))
+    //publishToMavenCentral(SonatypeHost.DEFAULT, true)
+    // or when publishing to https://s01.oss.sonatype.org
+    // publishToMavenCentral(SonatypeHost.S01)
+    // or when publishing to https://central.sonatype.com/
+    publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL)
+
+    signAllPublications()
+
+    coordinates("${project.group}", 'short-uuid', "${version}")
+
+    pom {
+        name = 'short-uuid'
+        description = 'Short UUID conversion and generation library for Java'
+        inceptionYear = "2024"
+        url = 'https://github.com/bizone-ai/short-uuid'
+        licenses {
+            license {
+                name = "The Apache License, Version 2.0"
+                url = "http://www.apache.org/licenses/LICENSE-2.0.txt"
+                distribution = "http://www.apache.org/licenses/LICENSE-2.0.txt"
+            }
+        }
+        developers {
+            developer {
+                id = "surielb"
+                name = "Suriel Bendahan"
+                url = "https://github.com/surielb/"
+            }
+        }
+        scm {
+            url = 'https://github.com/bizone-ai/short-uuid'
+            connection = 'scm:git://github.com/bizone-ai/short-uuid.git'
+            developerConnection = 'scm:git://github.com/bizone-ai/short-uuid.git'
         }
     }
 }
-
-//mavenPublishing {
-//    configure(new JavaLibrary(new JavadocJar.Javadoc(), true))
-//    //publishToMavenCentral(SonatypeHost.DEFAULT, true)
-//    // or when publishing to https://s01.oss.sonatype.org
-//    // publishToMavenCentral(SonatypeHost.S01)
-//    // or when publishing to https://central.sonatype.com/
-//    publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL)
-//
-//    signAllPublications()
-//
-//    coordinates("${project.group}", 'short-uuid', "${version}")
-//
-//    pom {
-//        name = 'short-uuid'
-//        description = 'Short UUID conversion and generation library for Java'
-//        inceptionYear = "2024"
-//        url = 'https://github.com/bizone-ai/short-uuid'
-//        licenses {
-//            license {
-//                name = "The Apache License, Version 2.0"
-//                url = "http://www.apache.org/licenses/LICENSE-2.0.txt"
-//                distribution = "http://www.apache.org/licenses/LICENSE-2.0.txt"
-//            }
-//        }
-//        developers {
-//            developer {
-//                id = "surielb"
-//                name = "Suriel Bendahan"
-//                url = "https://github.com/surielb/"
-//            }
-//        }
-//        scm {
-//            url = 'https://github.com/bizone-ai/short-uuid'
-//            connection = 'scm:git://github.com/bizone-ai/short-uuid.git'
-//            developerConnection = 'scm:git://github.com/bizone-ai/short-uuid.git'
-//        }
-//    }
-//}
